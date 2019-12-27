@@ -1,0 +1,11 @@
+demo:
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: localhost:9200
+      index:
+        number-of-shards: 3
+        number-of-replicas: 2
+      account:
+        username: elastic
+        password: 123456
