@@ -27,7 +27,6 @@ import java.util.List;
  */
 @Configuration
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-//@EnableElasticsearch(scanBasePackages = {"com.zbq.springbootelasticsearch.dao"})
 public class ElasticsearchConfig {
 
     private final ElasticsearchProperties elasticsearchProperties;
