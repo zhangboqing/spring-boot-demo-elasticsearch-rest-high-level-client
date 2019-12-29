@@ -1,4 +1,4 @@
-package com.zbq.springbootelasticsearch.dao.base;
+package com.zbq.springbootelasticsearch.common.elasticsearch.base;
 
 import com.alibaba.fastjson.JSON;
 import com.zbq.springbootelasticsearch.common.config.ElasticsearchProperties;
@@ -31,13 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * @author zhangboqing

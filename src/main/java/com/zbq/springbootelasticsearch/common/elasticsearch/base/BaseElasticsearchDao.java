@@ -1,16 +1,14 @@
-package com.zbq.springbootelasticsearch.dao.base;
+package com.zbq.springbootelasticsearch.common.elasticsearch.base;
 
 import com.alibaba.fastjson.JSON;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESDocument;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESId;
-import com.zbq.springbootelasticsearch.model.GoodsESEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,6 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -133,6 +130,44 @@ public abstract class BaseElasticsearchDao<T> {
         return genericInstanceList;
 
     }
+
+    /**
+     * 分页搜索文档，根据指定的搜索条件
+     * @param searchSourceBuilder
+     * @param pageNo    页码
+     * @param pageSize  每页大小
+     * @return
+     */
+    public List<T> search(SearchSourceBuilder searchSourceBuilder,int pageNo,int pageSize) {
+        Assert.notNull(searchSourceBuilder,"searchSourceBuilder is null");
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        searchRequest.source(searchSourceBuilder);
+
+        if (pageNo > 0 && pageSize > 0) {
+            searchSourceBuilder.from(pageNo);
+            searchSourceBuilder.size(pageSize);
+        }
+
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (searchResponse == null) {
+            return null;
+        }
+
+        SearchHit[] hits = searchResponse.getHits().getHits();
+        List<T> genericInstanceList = new ArrayList<>();
+        Arrays.stream(hits).forEach(hit -> {
+            String sourceAsString = hit.getSourceAsString();
+            genericInstanceList.add(JSON.parseObject(sourceAsString, genericClass));
+        });
+        return genericInstanceList;
+
+    }
+
 
 
     public List<T> searchList() {

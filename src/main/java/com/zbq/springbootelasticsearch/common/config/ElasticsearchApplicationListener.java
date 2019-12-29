@@ -2,8 +2,8 @@ package com.zbq.springbootelasticsearch.common.config;
 
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESDocument;
 import com.zbq.springbootelasticsearch.common.exception.ElasticsearchException;
-import com.zbq.springbootelasticsearch.dao.base.BaseElasticsearchDao;
-import com.zbq.springbootelasticsearch.dao.base.ElasticsearchUtils;
+import com.zbq.springbootelasticsearch.common.elasticsearch.base.BaseElasticsearchDao;
+import com.zbq.springbootelasticsearch.common.elasticsearch.base.ElasticsearchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class ElasticsearchApplicationListener implements ApplicationListener<Con
         if (beanNames != null && beanNames.length > 0) {
             for (int i = 0; i < beanNames.length; i++) {
                 String beanName = beanNames[i];
-                if (beanName.contains("com.zbq.springbootelasticsearch.dao.base.BaseElasticsearchDao")) {
+                if (beanName.contains("com.zbq.springbootelasticsearch.common.elasticsearch.base.BaseElasticsearchDao")) {
                     continue;
                 }
                 Object bean = applicationContext.getBean(beanName);
