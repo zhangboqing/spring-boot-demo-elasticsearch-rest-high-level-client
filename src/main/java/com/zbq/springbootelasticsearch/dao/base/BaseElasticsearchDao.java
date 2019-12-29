@@ -3,15 +3,20 @@ package com.zbq.springbootelasticsearch.dao.base;
 import com.alibaba.fastjson.JSON;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESDocument;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESId;
+import com.zbq.springbootelasticsearch.model.GoodsESEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -36,15 +41,15 @@ public abstract class BaseElasticsearchDao<T> {
     /**
      * 索引名称
      */
-    private String indexName;
+    protected String indexName;
     /**
      * ID字段
      */
-    private Field idField;
+    protected Field idField;
     /**
      * T对应的类型Class
      */
-    private Class<T> genericClass;
+    protected Class<T> genericClass;
 
     public BaseElasticsearchDao() {
         Class<T> beanClass = (Class<T>) GenericTypeResolver.resolveTypeArgument(this.getClass(), BaseElasticsearchDao.class);
@@ -65,7 +70,11 @@ public abstract class BaseElasticsearchDao<T> {
     }
 
 
-    public void insert(List<T> list) {
+    /**
+     * 保存或更新文档数据
+     * @param list 文档数据集合
+     */
+    public void saveOrUpdate(List<T> list) {
 
         list.forEach(genericInstance -> {
             IndexRequest request = ElasticsearchUtils.buildIndexRequest(indexName, getIdValue(genericInstance), genericInstance);
@@ -79,13 +88,11 @@ public abstract class BaseElasticsearchDao<T> {
 
     }
 
-    public void update(List<T> list) {
-        list.forEach(genericInstance -> {
-            Object idValue = ReflectionUtils.getField(idField, genericInstance);
-            elasticsearchUtils.updateRequest(indexName, String.valueOf(idValue), genericInstance);
-        });
-    }
-
+    /**
+     * 删除操作
+     * 当genericInstance在es中不存在时，调用该方法也不会报错
+     * @param genericInstance 被删除的实例对象
+     */
     public void delete(T genericInstance) {
         if (ObjectUtils.isEmpty(genericInstance)) {
             // 如果对象为空，则删除全量
@@ -96,6 +103,37 @@ public abstract class BaseElasticsearchDao<T> {
         }
         elasticsearchUtils.deleteRequest(indexName, getIdValue(genericInstance));
     }
+
+    /**
+     * 搜索文档，根据指定的搜索条件
+     * @param searchSourceBuilder
+     * @return
+     */
+    public List<T> search(SearchSourceBuilder searchSourceBuilder) {
+        Assert.notNull(searchSourceBuilder,"searchSourceBuilder is null");
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (searchResponse == null) {
+            return null;
+        }
+
+        SearchHit[] hits = searchResponse.getHits().getHits();
+        List<T> genericInstanceList = new ArrayList<>();
+        Arrays.stream(hits).forEach(hit -> {
+            String sourceAsString = hit.getSourceAsString();
+            genericInstanceList.add(JSON.parseObject(sourceAsString, genericClass));
+        });
+        return genericInstanceList;
+
+    }
+
 
     public List<T> searchList() {
         SearchResponse searchResponse = elasticsearchUtils.search(indexName);
@@ -108,7 +146,17 @@ public abstract class BaseElasticsearchDao<T> {
         return genericInstanceList;
     }
 
+    /**
+     * ============================================================================================================
+     *                                                  私有方法
+     * ============================================================================================================
+     * */
 
+    /**
+     * 获取当前操作的genericInstance的主键ID
+     * @param genericInstance 实例对象
+     * @return 返回主键ID值
+     */
     private String getIdValue(T genericInstance) {
         try {
             Object idValue = idField.get(genericInstance);
