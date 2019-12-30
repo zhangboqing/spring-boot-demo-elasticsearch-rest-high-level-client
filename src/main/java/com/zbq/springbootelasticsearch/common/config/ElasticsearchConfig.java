@@ -12,6 +12,8 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -27,6 +29,7 @@ import java.util.List;
  */
 @Configuration
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@EnableAutoConfiguration(exclude = {RestClientAutoConfiguration.class})
 public class ElasticsearchConfig {
 
     private final ElasticsearchProperties elasticsearchProperties;
