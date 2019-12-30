@@ -1,5 +1,6 @@
 package com.zbq.springbootelasticsearch;
 
+import com.zbq.springbootelasticsearch.common.elasticsearch.base.ESPageResult;
 import com.zbq.springbootelasticsearch.dao.GoodsESDao;
 import com.zbq.springbootelasticsearch.model.GoodsESEntity;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,12 @@ class GoodsESDaoTest {
     @Test
     public void saveOrUpdateTest() {
         List<GoodsESEntity> list = new ArrayList<>();
-            list.add(GoodsESEntity.builder().goodsId(1L).goodsName("保时捷跑车V10").goodBrand("国际").goodsSpec("哈哈").goodsAccessoriesCode("所噶").goodsOriginalFactoryCode("212").groupData("保时捷跑车V10 国际 哈哈 所噶 212").build());
-//        list.add(GoodsESEntity.builder().goodsId(1L).goodsName("2").goodBrand("1").goodsSpec("1").goodsAccessoriesCode("1").goodsOriginalFactoryCode("1").build());
-//        list.add(GoodsESEntity.builder().goodsId(1L).goodsName("3").goodBrand("1").goodsSpec("1").goodsAccessoriesCode("1").goodsOriginalFactoryCode("1").build());
+        list.add(GoodsESEntity.builder().goodsId(1L).goodsName("保时捷跑车V10").goodBrand("国际1").goodsSpec("哈哈1").goodsAccessoriesCode("所噶1").goodsOriginalFactoryCode("2121").groupData("保时捷跑车V10 国际1 哈哈1 所噶1 2121").build());
+        list.add(GoodsESEntity.builder().goodsId(2L).goodsName("保时捷跑车V10").goodBrand("国际2").goodsSpec("哈哈2").goodsAccessoriesCode("所噶2").goodsOriginalFactoryCode("2122").groupData("保时捷跑车V20 国际2 哈哈2 所噶2 2122").build());
+        list.add(GoodsESEntity.builder().goodsId(3L).goodsName("保时捷跑车V20").goodBrand("国际1").goodsSpec("哈哈3").goodsAccessoriesCode("所噶3").goodsOriginalFactoryCode("2123").groupData("保时捷跑车V30 国际3 哈哈3 所噶3 2123").build());
+        list.add(GoodsESEntity.builder().goodsId(4L).goodsName("保时捷跑车V20").goodBrand("国际2").goodsSpec("哈哈4").goodsAccessoriesCode("所噶4").goodsOriginalFactoryCode("2124").groupData("保时捷跑车V40 国际4 哈哈4 所噶4 2124").build());
+        list.add(GoodsESEntity.builder().goodsId(5L).goodsName("保时捷跑车V30").goodBrand("国际1").goodsSpec("哈哈5").goodsAccessoriesCode("所噶5").goodsOriginalFactoryCode("2125").groupData("保时捷跑车V50 国际5 哈哈5 所噶5 2125").build());
+        list.add(GoodsESEntity.builder().goodsId(6L).goodsName("保时捷跑车V40").goodBrand("国际2").goodsSpec("哈哈6").goodsAccessoriesCode("所噶6").goodsOriginalFactoryCode("2126").groupData("保时捷跑车V60 国际6 哈哈6 所噶6 2126").build());
 
         goodsESDao.saveOrUpdate(list);
     }
@@ -34,24 +38,44 @@ class GoodsESDaoTest {
      */
     @Test
     public void deleteTest() {
-        goodsESDao.delete( GoodsESEntity.builder().goodsId(2L).build());
+        goodsESDao.delete(GoodsESEntity.builder().goodsId(2L).build());
     }
 
     /**
-     * 测试查询
+     * 测试分词查询
      */
     @Test
-    public void searchListTest() {
-        List<GoodsESEntity> personList = goodsESDao.searchList();
-        System.out.println(personList);
+    public void searchListByAnalysisTest() {
+        List<GoodsESEntity> goodsESEntityList = goodsESDao.findListByAnalysisForGroupData("所");
+        System.out.println(goodsESEntityList);
     }
 
     /**
-     * 测试查询
+     * 测试等值查询
+     */
+    @Test
+    public void searchListByEqTest() {
+        List<GoodsESEntity> goodsESEntityList = goodsESDao.findListByEq();
+        System.out.println(goodsESEntityList);
+    }
+
+    /**
+     * 测试like查询
+     */
+    @Test
+    public void searchListByLikeTest() {
+        List<GoodsESEntity> goodsESEntityList = goodsESDao.findListByLike();
+        System.out.println(goodsESEntityList);
+    }
+
+    /**
+     * 测试分页和排序
      */
     @Test
     public void findList() {
-        List<GoodsESEntity> personList = goodsESDao.findListByGroupData("所");
-        System.out.println(personList);
+
+        ESPageResult esPageResult = goodsESDao.findList("所");
+        System.out.println(esPageResult);
+
     }
 }

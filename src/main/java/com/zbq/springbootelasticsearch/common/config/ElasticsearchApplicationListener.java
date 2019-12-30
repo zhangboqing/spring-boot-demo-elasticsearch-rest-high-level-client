@@ -27,6 +27,7 @@ public class ElasticsearchApplicationListener implements ApplicationListener<Con
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+
         String[] beanNames = applicationContext.getBeanNamesForType(BaseElasticsearchDao.class);
         if (beanNames != null && beanNames.length > 0) {
             for (int i = 0; i < beanNames.length; i++) {

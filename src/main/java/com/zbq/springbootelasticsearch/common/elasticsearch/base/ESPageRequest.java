@@ -10,12 +10,12 @@ import lombok.Data;
 @Data
 public class ESPageRequest {
 
-    private final int page;
+    private final int pageNo;
     private final int size;
 
-    public ESPageRequest(int page, int size) {
+    public ESPageRequest(int pageNo, int size) {
 
-        if (page < 0) {
+        if (pageNo < 0) {
             throw new IllegalArgumentException("Page index must not be less than zero!");
         }
 
@@ -23,7 +23,7 @@ public class ESPageRequest {
             throw new IllegalArgumentException("Page size must not be less than one!");
         }
 
-        this.page = page;
+        this.pageNo = pageNo;
         this.size = size;
     }
 

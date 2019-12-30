@@ -25,6 +25,7 @@ public class GoodsESEntity {
      * 主键,商品ID
      */
     @ESId
+    @ESField(value = "goodsId",type = ESFieldType.Long)
     private Long goodsId;
 
     /**
