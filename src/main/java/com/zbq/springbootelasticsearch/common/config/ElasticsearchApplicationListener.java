@@ -16,6 +16,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+/**
+ * @author zhangboqing
+ * @date 2019/12/10
+ */
 @Component
 @Slf4j
 public class ElasticsearchApplicationListener implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {

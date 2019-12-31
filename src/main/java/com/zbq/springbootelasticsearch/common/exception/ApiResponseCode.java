@@ -7,10 +7,12 @@ public enum ApiResponseCode implements IApiResponseCode {
     public Integer code;
     public String message;
 
+    @Override
     public Integer getCode() {
         return this.code;
     }
 
+    @Override
     public String getMessage() {
         return this.message;
     }
