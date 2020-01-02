@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.zbq</groupId>
-    <artifactId>spring-boot-elasticsearch</artifactId>
+    <artifactId>spring-boot-demo-elasticsearch-rest-high-level-client</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-elasticsearch</name>
+    <name>spring-boot-demo-elasticsearch-rest-high-level-client</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

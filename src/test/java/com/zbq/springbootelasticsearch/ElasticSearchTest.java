@@ -12,6 +12,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -22,7 +23,6 @@ import java.io.IOException;
  * @author zhangboqing
  * @date 2018/10/23
  */
-@WebAppConfiguration
 @SpringBootTest
 @Slf4j
 public class ElasticSearchTest {
