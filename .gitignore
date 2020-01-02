@@ -28,3 +28,4 @@ HELP.md
 .idea/
 spring-boot-elasticsearch.iml
 target/
+*.iml
