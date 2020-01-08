@@ -24,10 +24,13 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class ElasticsearchApplicationListener implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
 
+    private static final String baseElasticsearchDaoClassName = "com.zbq.springbootelasticsearch.common.elasticsearch.base.BaseElasticsearchDao";
+
+    private ApplicationContext applicationContext;
+
     @Autowired
     protected ElasticsearchUtils elasticsearchUtils;
 
-    private ApplicationContext applicationContext;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -36,7 +39,7 @@ public class ElasticsearchApplicationListener implements ApplicationListener<Con
         if (beanNames != null && beanNames.length > 0) {
             for (int i = 0; i < beanNames.length; i++) {
                 String beanName = beanNames[i];
-                if (beanName.contains("com.zbq.springbootelasticsearch.common.elasticsearch.base.BaseElasticsearchDao")) {
+                if (beanName.contains(baseElasticsearchDaoClassName)) {
                     continue;
                 }
                 Object bean = applicationContext.getBean(beanName);
