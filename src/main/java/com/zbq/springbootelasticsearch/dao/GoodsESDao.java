@@ -49,12 +49,13 @@ public class GoodsESDao<T extends GoodsESEntity> extends BaseElasticsearchDao<Go
 
     /**
      * 多条件like查询查询
+     * 支持*或？，*多个字符，？单个字符
      * @return
      */
     public List<GoodsESEntity> findListByLike() {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        boolQueryBuilder.filter(QueryBuilders.wildcardQuery("goodsName","?V10"));
+        boolQueryBuilder.filter(QueryBuilders.wildcardQuery("goodsName","*V30"));
         boolQueryBuilder.filter(QueryBuilders.wildcardQuery("goodBrand","国际1"));
         searchSourceBuilder.query(boolQueryBuilder);
         List<GoodsESEntity> search = search(searchSourceBuilder);
@@ -76,7 +77,7 @@ public class GoodsESDao<T extends GoodsESEntity> extends BaseElasticsearchDao<Go
         ESPageRequest esPageRequest = new ESPageRequest(1, 2);
 
         // 排序
-        ESSort esSort = new ESSort(SortOrder.ASC,"goodsName");
+        ESSort esSort = new ESSort(SortOrder.ASC,"goodsId");
 
         ESPageResult<GoodsESEntity> search = search(searchSourceBuilder, esPageRequest, esSort);
         return search;

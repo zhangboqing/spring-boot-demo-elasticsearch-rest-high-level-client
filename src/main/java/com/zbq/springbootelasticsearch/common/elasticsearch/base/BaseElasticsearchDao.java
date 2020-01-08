@@ -1,17 +1,14 @@
 package com.zbq.springbootelasticsearch.common.elasticsearch.base;
 
-import com.alibaba.fastjson.JSON;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESDocument;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESId;
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
+import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.search.TotalHits;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +20,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,7 +32,7 @@ public abstract class BaseElasticsearchDao<T> {
     @Autowired
     protected ElasticsearchUtils elasticsearchUtils;
     @Autowired
-    protected RestHighLevelClient client;
+    protected JestClient client;
 
     /**
      * 索引名称
@@ -79,9 +74,10 @@ public abstract class BaseElasticsearchDao<T> {
     public void saveOrUpdate(List<T> list) {
 
         list.forEach(genericInstance -> {
-            IndexRequest request = ElasticsearchUtils.buildIndexRequest(indexName, getIdValue(genericInstance), genericInstance);
+            Index index = new Index.Builder(genericInstance).index(indexName).type(indexName).id(getIdValue(genericInstance)).build();
             try {
-                client.index(request, RequestOptions.DEFAULT);
+                JestResult result = client.execute(index);
+                log.info(" saveOrUpdate responseCcode: {},errorMessage: {}", result.getResponseCode(),result.getErrorMessage());
             } catch (IOException e) {
                 e.printStackTrace();
                 log.error("elasticsearch insert error", e);
@@ -114,7 +110,6 @@ public abstract class BaseElasticsearchDao<T> {
      * @return
      */
     public List<T> search(SearchSourceBuilder searchSourceBuilder) {
-        ESSort esSort = new ESSort(SortOrder.ASC,"goodsName");
         ESPageResult search = search(searchSourceBuilder, null, null);
         return search != null ? search.getResults() : null;
 
@@ -149,28 +144,27 @@ public abstract class BaseElasticsearchDao<T> {
             }
         }
 
-        SearchResponse searchResponse = null;
+        Search search = new Search.Builder(searchSourceBuilder.toString())
+                .addIndex(indexName)
+                .addType(indexName)
+                .build();
+
+        SearchResult result = null;
         try {
-            searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            result = client.execute(search);
+            log.info(" updateRequest responseCcode: {},errorMessage: {}", result.getResponseCode(),result.getErrorMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (searchResponse == null) {
+        if (result == null) {
             return null;
         }
 
-        SearchHits searchHits = searchResponse.getHits();
-        SearchHit[] hits = searchHits.getHits();
-        List<T> genericInstanceList = new ArrayList<>();
-        Arrays.stream(hits).forEach(hit -> {
-            String sourceAsString = hit.getSourceAsString();
-            genericInstanceList.add(JSON.parseObject(sourceAsString, genericClass));
-        });
+        List<T> genericInstanceList = result.getSourceAsObjectList(genericClass, false);
 
-        TotalHits totalHits = searchHits.getTotalHits();
-        long total = totalHits.value;
+
         ESPageResult<T> pageResult = new ESPageResult<>(
-                total,
+                result.getTotal(),
                 esPageRequest != null ? esPageRequest.getPageNo() : -1,
                 esPageRequest != null ? esPageRequest.getSize() : -1,
                 genericInstanceList);
@@ -188,13 +182,8 @@ public abstract class BaseElasticsearchDao<T> {
      * */
 
     private List<T> searchList() {
-        SearchResponse searchResponse = elasticsearchUtils.search(indexName);
-        SearchHit[] hits = searchResponse.getHits().getHits();
-        List<T> genericInstanceList = new ArrayList<>();
-        Arrays.stream(hits).forEach(hit -> {
-            String sourceAsString = hit.getSourceAsString();
-            genericInstanceList.add(JSON.parseObject(sourceAsString, genericClass));
-        });
+        SearchResult searchResult = elasticsearchUtils.search(indexName);
+        List<T> genericInstanceList = searchResult.getSourceAsObjectList(genericClass, false);
         return genericInstanceList;
     }
 

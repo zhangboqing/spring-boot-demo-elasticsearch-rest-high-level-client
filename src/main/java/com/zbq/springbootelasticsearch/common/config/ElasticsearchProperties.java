@@ -30,15 +30,10 @@ public class ElasticsearchProperties {
     private String schema = "http";
 
     /**
-     * 集群名称
-     */
-    private String clusterName = "elasticsearch";
-
-    /**
      * 集群节点
      */
-    @NotNull(message = "集群节点不允许为空")
-    private List<String> clusterNodes = new ArrayList<>();
+    @NotNull(message = "es地址不允许为空")
+    private List<String> urls = new ArrayList<>();
 
     /**
      * 连接超时时间(毫秒)

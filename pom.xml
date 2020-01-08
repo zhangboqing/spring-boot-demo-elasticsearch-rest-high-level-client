@@ -24,38 +24,17 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- elasticsearch -->
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.4.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>elasticsearch</artifactId>
-                    <groupId>org.elasticsearch</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>elasticsearch-rest-client</artifactId>
-                    <groupId>org.elasticsearch.client</groupId>
-                </exclusion>
-            </exclusions>
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<artifactId>elasticsearch</artifactId>-->
-                    <!--<groupId>org.elasticsearch</groupId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
+            <groupId>io.searchbox</groupId>
+            <artifactId>jest</artifactId>
+            <!--<version>5.3.4</version>-->
+            <version>6.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>7.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-client</artifactId>
-            <version>7.4.2</version>
-            <scope>compile</scope>
+            <version>5.5.3</version>
         </dependency>
 
         <dependency>
