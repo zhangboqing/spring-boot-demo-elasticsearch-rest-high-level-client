@@ -2,6 +2,7 @@ package com.zbq.springbootelasticsearch.common.elasticsearch.base;
 
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESDocument;
 import com.zbq.springbootelasticsearch.common.elasticsearch.annotation.ESId;
+import com.zbq.springbootelasticsearch.common.exception.ElasticsearchException;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Index;
@@ -10,13 +11,14 @@ import io.searchbox.core.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -27,7 +29,7 @@ import java.util.List;
  * @date 2019/12/10
  */
 @Slf4j
-public abstract class BaseElasticsearchDao<T> {
+public abstract class BaseElasticsearchDao<T> implements InitializingBean {
 
     @Autowired
     protected ElasticsearchUtils elasticsearchUtils;
@@ -204,4 +206,24 @@ public abstract class BaseElasticsearchDao<T> {
         return null;
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        ESDocument esDocument = AnnotationUtils.findAnnotation(genericClass, ESDocument.class);
+        if (esDocument == null) {
+            throw new ElasticsearchException("ESDocument注解未指定");
+        }
+        String indexName = esDocument.indexName();
+        if (StringUtils.isEmpty(indexName)) {
+            throw new ElasticsearchException("indexName未指定");
+        }
+        int shards = esDocument.shards();
+        int replicas = esDocument.replicas();
+
+        if (shards == 0 || replicas == 0) {
+            elasticsearchUtils.createIndexRequest(indexName);
+        } else {
+            elasticsearchUtils.createIndexRequest(indexName, shards, replicas);
+        }
+        elasticsearchUtils.putMappingRequest(indexName, genericClass);
+    }
 }
