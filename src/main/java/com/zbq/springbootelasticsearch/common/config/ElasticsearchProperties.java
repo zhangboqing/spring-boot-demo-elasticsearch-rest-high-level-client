@@ -1,11 +1,8 @@
 package com.zbq.springbootelasticsearch.common.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -17,11 +14,8 @@ import java.util.List;
  * @date 2019/12/10
  */
 @Data
-@Builder
-@Component
-@NoArgsConstructor
-@AllArgsConstructor
-@ConfigurationProperties(prefix = "demo.data.elasticsearch")
+@Configuration
+@ConfigurationProperties(prefix = "jest.data.elasticsearch")
 public class ElasticsearchProperties {
 
     /**

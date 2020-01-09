@@ -1,14 +1,10 @@
-demo:
+jest:
   data:
     elasticsearch:
       # es集群节点  http://localhost:9200
       urls:
         - 'http://localhost:9200'
-      # 设置创建index时，默认的分片规则
-      index:
-        number-of-shards: 3
-        number-of-replicas: 2
       # 设置连接es的用户名和密码
       account:
         username: elastic
-        password: 123456
+        password: 12345

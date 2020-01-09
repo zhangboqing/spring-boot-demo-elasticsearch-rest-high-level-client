@@ -5,26 +5,26 @@ import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 
 /**
  * @author zhangboqing
  * @date 2019/12/10
  */
-@Configuration
+@ConditionalOnProperty(prefix = "jest.data.elasticsearch", value = "urls[0]")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@EnableAutoConfiguration(exclude = {RestClientAutoConfiguration.class})
+@EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchConfig {
 
     private final ElasticsearchProperties elasticsearchProperties;
 
 
     @Bean
-    public JestClient initializeJestClient(){
+    @ConditionalOnMissingBean({ JestClient.class})
+    public JestClient initializeJestClient() {
 
         HttpClientConfig clientConfig = new HttpClientConfig
                 .Builder(elasticsearchProperties.getUrls())
@@ -43,3 +43,4 @@ public class ElasticsearchConfig {
     }
 
 }
+
