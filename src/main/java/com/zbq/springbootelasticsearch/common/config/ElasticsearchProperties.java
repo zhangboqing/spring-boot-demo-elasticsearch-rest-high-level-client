@@ -19,30 +19,10 @@ import java.util.List;
 public class ElasticsearchProperties {
 
     /**
-     * 请求协议
-     */
-    private String schema = "http";
-
-    /**
      * 集群节点
      */
     @NotNull(message = "es地址不允许为空")
-    private List<String> urls = new ArrayList<>();
-
-    /**
-     * 连接超时时间(毫秒)
-     */
-    private Integer connectTimeout = 1000;
-
-    /**
-     * socket 超时时间
-     */
-    private Integer socketTimeout = 30000;
-
-    /**
-     * 连接请求超时时间
-     */
-    private Integer connectionRequestTimeout = 500;
+    private List<String> urls = new ArrayList();
 
     /**
      * 每个路由的最大连接数量
@@ -63,6 +43,16 @@ public class ElasticsearchProperties {
      * 认证账户
      */
     private Account account = new Account();
+
+    /**
+     * Connection timeout. millisecond
+     */
+    private Integer connectionTimeout = 3000;
+
+    /**
+     * Read timeout. millisecond
+     */
+    private Integer readTimeout = 3000;
 
     /**
      * 索引配置信息

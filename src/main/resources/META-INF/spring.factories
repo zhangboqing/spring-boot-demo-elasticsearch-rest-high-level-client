@@ -1,3 +1,3 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
- com.zbq.springbootelasticsearch.common.config.ElasticsearchConfig
+com.zbq.springbootelasticsearch.common.config.ElasticsearchConfig
